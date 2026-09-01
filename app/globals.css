@@ -1,72 +1,8 @@
 @import "tailwindcss";
 
-@layer components {
-
-  
-
-  
-  body.low-graphics .backdrop-blur-md,
-  body.low-graphics .backdrop-blur-sm,
-  body.low-graphics .backdrop-blur,
-  body.low-graphics [class*="backdrop-blur"] {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    background-color: #09090b !important;
-    
-    border-color: rgba(255, 255, 255, 0.1) !important;
-    box-shadow: none !important;
-  }
-
-  
-  
-  body.low-graphics nav[class*="backdrop-blur"],
-  body.low-graphics div[class*="backdrop-blur"] {
-    background-color: #09090b !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  }
-
-  
-  body.low-graphics button[class*="backdrop-blur"],
-  body.low-graphics a[class*="backdrop-blur"] {
-    background-color: #09090b !important;
-    backdrop-filter: none !important;
-  }
-
-  body.low-graphics button[class*="backdrop-blur"]:hover,
-  body.low-graphics a[class*="backdrop-blur"]:hover {
-    background-color: #27272a !important;
-    
-  }
-
-  
-  body.low-graphics .bg-white\/10 {
-    background-color: #27272a !important;
-    
-  }
-
-  
-  body.low-graphics nav .text-gray-300 {
-    color: #e4e4e7 !important;
-    
-  }
-
-  body.low-graphics nav .text-gray-300:hover {
-    color: #ffffff !important;
-  }
-
-  
-  body.low-graphics nav .bg-white.text-black {
-    background-color: #22d3ee !important;
-    
-    color: #09090b !important;
-    
-  }
-}
-
-
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #000000;
+  --foreground: #ffffff;
 }
 
 @theme inline {
@@ -74,13 +10,6 @@
   --color-foreground: var(--foreground);
   --font-sans: "JetBrains Mono", monospace;
   --font-mono: "JetBrains Mono", monospace;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
@@ -91,19 +20,12 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-
-
-
-
-
 .safe-area-inset-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-
 @media (max-width: 767px) {
   main {
     padding-bottom: 80px;
-    
   }
 }

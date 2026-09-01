@@ -4,9 +4,6 @@ import { Analytics } from '@vercel/analytics/next';
 import "@fontsource/jetbrains-mono";
 import "./globals.css";
 import QueryProvider from '@/components/providers/QueryProvider';
-import { GraphicsProvider } from '@/components/providers/GraphicsProvider';
-import { ThemeProvider } from '@/components/providers/ThemeProvider';
-import { HapticsProvider } from '@/components/providers/HapticsProvider';
 import { Sidebar } from '@/components/common/Sidebar';
 import { Footer } from '@/components/common/Footer';
 import { Toaster } from 'sonner';
@@ -87,10 +84,6 @@ export const metadata: Metadata = {
     description: "Discover and download high-quality 4K wallpapers for desktop and mobile.",
     images: ["/logo2.png"],
   },
-
-
-
-
   icons: {
     icon: '/logo2.png',
     shortcut: '/logo2.png',
@@ -105,9 +98,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className="antialiased"
-      >
+      <body className="antialiased">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -126,22 +117,16 @@ export default function RootLayout({
           }}
         />
         <QueryProvider>
-          <GraphicsProvider>
-            <ThemeProvider>
-              <HapticsProvider>
-                <div className="min-h-screen flex flex-col">
-                  <div className="flex-1">
-                    {children}
-                  </div>
-                  <Footer />
-                </div>
-                <Sidebar />
-                <Toaster richColors position="top-center" toastOptions={{ style: { zIndex: 99999 } }} />
-                <SpeedInsights />
-                <Analytics />
-              </HapticsProvider>
-            </ThemeProvider>
-          </GraphicsProvider>
+          <div className="min-h-screen flex flex-col">
+            <div className="flex-1">
+              {children}
+            </div>
+            <Footer />
+          </div>
+          <Sidebar />
+          <Toaster richColors position="top-center" toastOptions={{ style: { zIndex: 99999 } }} />
+          <SpeedInsights />
+          <Analytics />
         </QueryProvider>
       </body>
     </html>

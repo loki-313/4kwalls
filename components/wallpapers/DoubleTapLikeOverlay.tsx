@@ -4,10 +4,8 @@ import { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart } from 'lucide-react';
 import { useFavorites } from '@/lib/hooks/auth/useFavorites';
-import { useHaptics } from '@/components/providers/HapticsProvider';
-import { Wallpaper } from '@/lib/supabase';
-import { incrementFavoriteCount } from './WallpaperInfo';
-import { cn } from '@/utils/helpers';
+import { Wallpaper, incrementFavoriteCount } from '@/lib/supabase';
+import { cn, triggerHaptic } from '@/utils/helpers';
 
 interface DoubleTapLikeOverlayProps {
     wallpaper: Wallpaper;
@@ -24,7 +22,6 @@ export function DoubleTapLikeOverlay({
 }: DoubleTapLikeOverlayProps) {
     const [showHeart, setShowHeart] = useState(false);
     const { isFavorite, toggleFavorite } = useFavorites();
-    const { triggerHaptic } = useHaptics();
 
     const lastTap = useRef<number>(0);
     const timer = useRef<NodeJS.Timeout | null>(null);
@@ -67,7 +64,7 @@ export function DoubleTapLikeOverlay({
                 }, DOUBLE_TAP_DELAY);
             }
         }
-    }, [isFavorite, toggleFavorite, onSingleTap, wallpaper.id, triggerHaptic]);
+    }, [isFavorite, toggleFavorite, onSingleTap, wallpaper.id]);
 
     return (
         <div

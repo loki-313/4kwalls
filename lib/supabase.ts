@@ -1,10 +1,19 @@
-
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const isSupabaseConfigured = Boolean(
+    supabaseUrl &&
+    supabaseAnonKey &&
+    !supabaseUrl.includes('placeholder') &&
+    !supabaseUrl.includes('your-project')
+);
+
+export const supabase = createClient(
+    supabaseUrl || 'https://placeholder.supabase.co',
+    supabaseAnonKey || 'placeholder-anon-key'
+);
 
 export interface Wallpaper {
     id: number;
@@ -18,21 +27,13 @@ export interface Wallpaper {
     format: string;
 }
 
-/**
- * Fetch random wallpapers using optimized PostgreSQL RPC function
- * @param limit - Number of wallpapers to fetch
- * @param excludeIds - Optional array of IDs to exclude (default empty)
- * @returns Array of random wallpapers
- */
 export async function getRandomWallpapers(
     limit: number = 12,
     excludeIds: number[] = []
 ): Promise<Wallpaper[]> {
-
-
+    if (!isSupabaseConfigured) return [];
 
     const limitedExcludeIds = excludeIds.slice(-500);
-
     const { data, error } = await supabase
         .rpc('get_random_wallpapers', {
             batch_size: limit,
@@ -40,22 +41,22 @@ export async function getRandomWallpapers(
         });
 
     if (error) {
-        console.error('Error fetching random wallpapers:', error);
+        console.error('Error fetching random wallpapers:', error.message || error);
         return [];
     }
 
     return (data || []) as Wallpaper[];
 }
 
-
-
 export async function getTotalWallpaperCount(): Promise<number> {
+    if (!isSupabaseConfigured) return 0;
+
     const { count, error } = await supabase
         .from('wallpapers')
         .select('*', { count: 'exact', head: true });
 
     if (error) {
-        console.error('Error fetching total wallpaper count:', error);
+        console.error('Error fetching total wallpaper count:', error.message || error);
         return 0;
     }
 
@@ -63,7 +64,7 @@ export async function getTotalWallpaperCount(): Promise<number> {
 }
 
 export async function getWallpapersByIds(ids: number[]) {
-    if (!ids.length) return [];
+    if (!isSupabaseConfigured || !ids.length) return [];
 
     const { data, error } = await supabase
         .from('wallpapers')
@@ -72,7 +73,7 @@ export async function getWallpapersByIds(ids: number[]) {
         .order('id', { ascending: false });
 
     if (error) {
-        console.error('Error fetching favorite wallpapers:', error);
+        console.error('Error fetching favorite wallpapers:', error.message || error);
         return [];
     }
 
@@ -80,11 +81,14 @@ export async function getWallpapersByIds(ids: number[]) {
 }
 
 export async function getWallpaperById(id: number): Promise<Wallpaper | null> {
+    if (!isSupabaseConfigured) return null;
     const wallpapers = await getWallpapersByIds([id]);
     return wallpapers.length > 0 ? wallpapers[0] : null;
 }
 
 export async function getAllWallpaperIds(): Promise<number[]> {
+    if (!isSupabaseConfigured) return [];
+
     const { data, error } = await supabase
         .from('wallpapers')
         .select('id')
@@ -92,29 +96,21 @@ export async function getAllWallpaperIds(): Promise<number[]> {
         .limit(50000);
 
     if (error) {
-        console.error('Error fetching wallpaper IDs:', error);
+        console.error('Error fetching wallpaper IDs:', error.message || error);
         return [];
     }
 
     return data.map(w => w.id);
 }
 
-/**
- * Fetch wallpapers by category using a seeded random sort.
- * Uses the `get_category_wallpapers` RPC function.
- * 
- * @param category - Name of the category (matches against `name` field via ILIKE)
- * @param seed - Random seed string for consistent sorting
- * @param offset - Pagination offset
- * @param limit - Number of wallpapers to fetch
- * @returns Array of wallpapers
- */
 export async function getCategoryWallpapers(
     category: string,
     seed: string,
     offset: number = 0,
     limit: number = 24
 ): Promise<Wallpaper[]> {
+    if (!isSupabaseConfigured) return [];
+
     const { data, error } = await supabase
         .rpc('get_category_wallpapers', {
             category_text: category,
@@ -124,9 +120,29 @@ export async function getCategoryWallpapers(
         });
 
     if (error) {
-        console.error('Error fetching category wallpapers:', error);
+        console.error('Error fetching category wallpapers:', error.message || error);
         return [];
     }
 
     return (data || []) as Wallpaper[];
+}
+
+export async function incrementDownloadCount(wallpaperId: number): Promise<void> {
+    if (!isSupabaseConfigured) return;
+    const { error } = await supabase.rpc('increment_download', {
+        row_id: wallpaperId,
+    });
+    if (error) {
+        console.error('Failed to increment download count:', error.message);
+    }
+}
+
+export async function incrementFavoriteCount(wallpaperId: number): Promise<void> {
+    if (!isSupabaseConfigured) return;
+    const { error } = await supabase.rpc('increment_fav', {
+        row_id: wallpaperId,
+    });
+    if (error) {
+        console.error('Failed to increment fav count:', error.message);
+    }
 }

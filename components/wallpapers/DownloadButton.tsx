@@ -2,13 +2,10 @@
 
 import { useState } from 'react';
 import { Download, Loader2 } from 'lucide-react';
-import { cn, glassIcon, getProxiedImageUrl } from '@/utils/helpers';
+import { cn, glassIcon, getProxiedImageUrl, handleDownload, triggerHaptic } from '@/utils/helpers';
 import { motion, AnimatePresence } from 'framer-motion';
-import { handleDownload } from '@/utils/download';
 import { notifyError, notifySuccess } from '@/components/common/Notifications';
-import { incrementDownloadCount } from './WallpaperInfo';
-import { useHaptics } from '@/components/providers/HapticsProvider';
-import { ANIMATION } from '@/lib/constants';
+import { incrementDownloadCount } from '@/lib/supabase';
 
 interface DownloadButtonProps {
     wallpaperId: number;
@@ -30,7 +27,6 @@ export function DownloadButton({
     label
 }: DownloadButtonProps) {
     const [isDownloading, setIsDownloading] = useState(false);
-    const { triggerHaptic } = useHaptics();
 
     const handleClick = async (e: React.MouseEvent<HTMLElement>) => {
         e.stopPropagation();
@@ -42,7 +38,7 @@ export function DownloadButton({
             setIsDownloading(true);
             await incrementDownloadCount(wallpaperId);
             triggerHaptic('success');
-            setTimeout(() => setIsDownloading(false), ANIMATION.DOWNLOAD_SPINNER_DELAY);
+            setTimeout(() => setIsDownloading(false), 1500);
             return;
         }
 
@@ -79,7 +75,7 @@ export function DownloadButton({
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        transition={{ duration: ANIMATION.FAST }}
+                        transition={{ duration: 0.2 }}
                     >
                         <Loader2 size={variant === 'button' ? 18 : 16} className="animate-spin" />
                     </motion.div>
@@ -89,7 +85,7 @@ export function DownloadButton({
                         initial={{ opacity: 0, scale: 0.5 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.5 }}
-                        transition={{ duration: ANIMATION.FAST }}
+                        transition={{ duration: 0.2 }}
                     >
                         <Download size={variant === 'button' ? 18 : 16} />
                     </motion.div>

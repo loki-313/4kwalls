@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Home, Image as ImageIcon, Maximize } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -9,28 +9,11 @@ import { cn, glassActive, glassNavbar, glassIcon } from '@/utils/helpers';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { AuthModal } from './AuthModal';
-import { notifySuccess } from '@/components/common/Notifications';
-
-import { Z_INDEX } from '@/lib/constants';
 
 export function Header() {
     const pathname = usePathname();
     const { user, loading } = useAuth();
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-
-    useEffect(() => {
-        const handleOpenAuthModal = () => setIsAuthModalOpen(true);
-        window.addEventListener('open-auth-modal', handleOpenAuthModal);
-
-        if (typeof window !== 'undefined' && sessionStorage.getItem('login_success') && user && !loading) {
-            setTimeout(() => {
-                notifySuccess('Welcome back!');
-                sessionStorage.removeItem('login_success');
-            }, 500);
-        }
-
-        return () => window.removeEventListener('open-auth-modal', handleOpenAuthModal);
-    }, [user, loading]);
 
     return (
         <>
@@ -38,9 +21,8 @@ export function Header() {
                 initial={{ y: -20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.5, ease: "easeOut" }}
-                style={{ zIndex: Z_INDEX.HEADER }}
                 className={cn(
-                    "sticky top-0 w-full max-w-[1800px] mx-auto",
+                    "sticky top-0 w-full max-w-[1800px] mx-auto z-40",
                     "flex flex-row items-center justify-between",
                     "py-3 px-3 md:py-6 md:px-12",
                     "pointer-events-none transition-all duration-300"
@@ -57,7 +39,7 @@ export function Header() {
                                 priority
                             />
                         </div>
-                        <div className="text-[#00e5ff] font-bold text-lg md:text-2xl flex items-center gap-1">
+                        <div className="text-cyan-400 font-bold text-lg md:text-2xl flex items-center gap-1">
                             <span className="tracking-tighter">4K <span className="text-white">Walls</span></span>
                         </div>
                     </Link>

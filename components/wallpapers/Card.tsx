@@ -6,7 +6,6 @@ import { motion } from 'framer-motion';
 import { Info } from 'lucide-react';
 import { Wallpaper } from '@/lib/supabase';
 import { getThumbnailUrl, cn, glassIcon } from '@/utils/helpers';
-import { Z_INDEX, ANIMATION } from '@/lib/constants';
 import { WallpaperInfo } from './WallpaperInfo';
 import { DownloadButton } from './DownloadButton';
 import { FavoriteButton } from './FavoriteButton';
@@ -36,20 +35,18 @@ export function Card({ wallpaper, onClick, priority = false }: CardProps) {
                 exit: {
                     opacity: 0,
                     scale: 0.9,
-
-                    transition: { duration: ANIMATION.FAST, ease: "easeOut" }
+                    transition: { duration: 0.2, ease: "easeOut" }
                 }
             }}
             initial="hidden"
             animate="visible"
             exit="exit"
-            whileHover={{ scale: 1.05, zIndex: Z_INDEX.CARD_HOVER, transition: { duration: ANIMATION.FAST } }}
+            whileHover={{ scale: 1.05, zIndex: 10, transition: { duration: 0.2 } }}
             whileTap={{ scale: 0.98 }}
             className={cn(
-                "group relative aspect-[16/9] rounded-xl",
+                "group relative aspect-[16/9] rounded-xl z-0",
                 "bg-gray-900 border border-white/5 cursor-pointer"
             )}
-            style={{ zIndex: Z_INDEX.BACKGROUND }}
         >
             <DoubleTapLikeOverlay
                 wallpaper={wallpaper}
@@ -59,9 +56,8 @@ export function Card({ wallpaper, onClick, priority = false }: CardProps) {
                 <div className="absolute inset-0 w-full h-full">
                     <motion.div
                         initial={{ opacity: 0 }}
-
                         animate={{ opacity: imageLoaded ? 1 : 0 }}
-                        transition={{ duration: ANIMATION.SLOW, ease: "easeOut" }}
+                        transition={{ duration: 0.5, ease: "easeOut" }}
                         className="w-full h-full"
                     >
                         <Image
@@ -85,28 +81,22 @@ export function Card({ wallpaper, onClick, priority = false }: CardProps) {
                 </div>
             </DoubleTapLikeOverlay>
 
-            <div
-                className={cn(
-                    "absolute bottom-3 left-3",
-                    "opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300",
-                    "md:transform md:translate-y-2 md:group-hover:translate-y-0"
-                )}
-                style={{ zIndex: Z_INDEX.CARD_CONTENT }}
-            >
+            <div className={cn(
+                "absolute bottom-3 left-3 z-20",
+                "opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300",
+                "md:transform md:translate-y-2 md:group-hover:translate-y-0"
+            )}>
                 <FavoriteButton
                     wallpaper={wallpaper}
                     className="p-3 min-w-[44px] min-h-[44px] hover:!text-red-500"
                 />
             </div>
 
-            <div
-                className={cn(
-                    "absolute top-3 left-3 flex items-center gap-2",
-                    "opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300",
-                    "md:transform md:translate-y-2 md:group-hover:translate-y-0"
-                )}
-                style={{ zIndex: Z_INDEX.CARD_CONTENT }}
-            >
+            <div className={cn(
+                "absolute top-3 left-3 flex items-center gap-2 z-20",
+                "opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300",
+                "md:transform md:translate-y-2 md:group-hover:translate-y-0"
+            )}>
                 <div
                     className="relative hidden md:block"
                     onMouseEnter={() => setShowInfo(true)}

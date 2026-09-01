@@ -6,9 +6,9 @@ import { X, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { cn, glass, glassIcon, getThumbnailUrl } from '@/utils/helpers';
-import { supabase, Wallpaper, getCategoryWallpapers } from '@/lib/supabase';
+import { Wallpaper, getCategoryWallpapers } from '@/lib/supabase';
 import { ImageModal } from '@/components/wallpapers/ImageModal';
-import { Z_INDEX, WALLPAPER_CATEGORIES, INFINITE_SCROLL, STALE_TIME, IMAGE_CONFIG } from '@/lib/constants';
+import { WALLPAPER_CATEGORIES, INFINITE_SCROLL, STALE_TIME, IMAGE_CONFIG } from '@/lib/constants';
 
 interface CategoryModalProps {
     isOpen: boolean;
@@ -29,10 +29,7 @@ export function CategoryModal({ isOpen, onClose }: CategoryModalProps) {
         <>
             <AnimatePresence>
                 {isOpen && (
-                    <div
-                        className="fixed inset-0 flex items-center justify-center p-0 md:p-4"
-                        style={{ zIndex: Z_INDEX.OVERLAY_MODAL }}
-                    >
+                    <div className="fixed inset-0 flex items-center justify-center p-0 md:p-4 z-50">
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -51,7 +48,7 @@ export function CategoryModal({ isOpen, onClose }: CategoryModalProps) {
                                 "relative w-full max-w-4xl rounded-none md:rounded-2xl overflow-hidden",
                                 "flex flex-col",
                                 "h-full md:h-[85vh] md:max-h-[700px]",
-                                "bg-black/95 md:bg-black/60"
+                                "bg-black/95 md:bg-black/60 z-10"
                             )}
                         >
                             <div className="flex items-center justify-between p-4 md:p-6 border-b border-white/10">
@@ -95,7 +92,7 @@ export function CategoryModal({ isOpen, onClose }: CategoryModalProps) {
                                                     "flex items-center gap-3 px-4 py-3 rounded-xl",
                                                     "bg-white/5 hover:bg-white/10 border border-white/10",
                                                     "text-white font-medium transition-all",
-                                                    "hover:border-[var(--accent)]/50 hover:text-[var(--accent)]"
+                                                    "hover:border-cyan-500/50 hover:text-cyan-400"
                                                 )}
                                             >
                                                 <span className="text-xl">{category.emoji}</span>
@@ -139,7 +136,6 @@ function CategoryFeed({ category, onWallpaperClick }: CategoryFeedProps) {
         queryFn: async ({ pageParam = 0 }) => {
             const limit = INFINITE_SCROLL.BATCH_SIZE;
             const offset = pageParam * limit;
-
             return getCategoryWallpapers(category, seed, offset, limit);
         },
         initialPageParam: 0,
@@ -175,12 +171,7 @@ function CategoryFeed({ category, onWallpaperClick }: CategoryFeedProps) {
     }
 
     return (
-        <div
-            className={cn(
-                glass(),
-                "flex flex-col flex-1 min-h-0 bg-black/80 shadow-2xl"
-            )}
-        >
+        <div className={cn(glass(), "flex flex-col flex-1 min-h-0 bg-black/80 shadow-2xl")}>
             <div
                 className="flex-1 overflow-y-auto p-4 md:p-6"
                 onScroll={handleScroll}
@@ -193,7 +184,7 @@ function CategoryFeed({ category, onWallpaperClick }: CategoryFeedProps) {
                             animate={{ opacity: 1, scale: 1 }}
                             className={cn(
                                 "relative aspect-video rounded-lg overflow-hidden cursor-pointer",
-                                "border border-white/5 hover:border-[var(--accent)]/50 transition-all"
+                                "border border-white/5 hover:border-cyan-500/50 transition-all"
                             )}
                             onClick={() => onWallpaperClick(wallpaper)}
                         >

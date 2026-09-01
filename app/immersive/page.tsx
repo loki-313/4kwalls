@@ -5,10 +5,7 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { Loader2, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { ImmersiveCard } from '@/components/immersive/ImmersiveCard';
-import {
-    fetchUniqueWallpapers,
-    updateViewedIds
-} from '@/utils/random';
+import { fetchUniqueWallpapers, updateViewedIds } from '@/utils/random';
 import { glassIcon, cn } from '@/utils/helpers';
 import { STALE_TIME } from '@/lib/constants';
 
@@ -23,10 +20,6 @@ export default function ImmersivePage() {
         }
     }, []);
 
-    useEffect(() => {
-        if (!isHydrated) return;
-    }, [viewedIds, isHydrated]);
-
     const {
         data,
         fetchNextPage,
@@ -35,7 +28,7 @@ export default function ImmersivePage() {
         isFetchingNextPage
     } = useInfiniteQuery({
         queryKey: ['wallpapers', 'immersive', isHydrated ? 'active' : 'idle'],
-        queryFn: async ({ pageParam = 0 }) => {
+        queryFn: async () => {
             const wallpapers = await fetchUniqueWallpapers(5, viewedIds);
             setViewedIds(prev => updateViewedIds(prev, wallpapers));
             return wallpapers;

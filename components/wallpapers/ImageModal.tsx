@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
 import { Info, X } from 'lucide-react';
 import { Wallpaper } from '@/lib/supabase';
 import { getModalImageUrl, cn, glassIcon } from '@/utils/helpers';
@@ -11,8 +10,6 @@ import { DownloadButton } from './DownloadButton';
 import { ShareButton } from './ShareButton';
 import { FavoriteButton } from './FavoriteButton';
 import { DoubleTapLikeOverlay } from './DoubleTapLikeOverlay';
-
-import { Z_INDEX } from '@/lib/constants';
 
 interface ImageModalProps {
     wallpaper: Wallpaper | null;
@@ -24,7 +21,6 @@ export function ImageModal({ wallpaper, onClose }: ImageModalProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
 
-
     useEffect(() => {
         const handleResize = () => {
             setWindowSize({
@@ -33,15 +29,12 @@ export function ImageModal({ wallpaper, onClose }: ImageModalProps) {
             });
         };
 
-
         handleResize();
-
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
     if (!wallpaper) return null;
-
 
     const isDesktop = windowSize.width >= 768;
 
@@ -51,14 +44,12 @@ export function ImageModal({ wallpaper, onClose }: ImageModalProps) {
         const imageAspect = wallpaper.width / wallpaper.height;
 
         if (imageAspect > screenAspect) {
-
             mobileImageStyle = {
                 height: '100%',
                 width: 'auto',
                 maxWidth: 'none'
             };
         } else {
-
             mobileImageStyle = {
                 width: '100%',
                 height: 'auto',
@@ -74,9 +65,8 @@ export function ImageModal({ wallpaper, onClose }: ImageModalProps) {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    style={{ zIndex: Z_INDEX.IMAGE_MODAL }}
                     className={cn(
-                        "fixed inset-0 flex items-center justify-center p-0 md:p-4",
+                        "fixed inset-0 flex items-center justify-center p-0 md:p-4 z-50",
                         "bg-black/95 backdrop-blur-xl"
                     )}
                     onClick={onClose}
@@ -87,17 +77,10 @@ export function ImageModal({ wallpaper, onClose }: ImageModalProps) {
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.9, opacity: 0 }}
                         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-
-
-
-
-
-
-
                         drag={isDesktop ? "y" : false}
                         dragConstraints={{ top: 0, bottom: 0 }}
                         dragElastic={{ top: 0.8, bottom: 0.8 }}
-                        onDragEnd={(e, { offset, velocity }) => {
+                        onDragEnd={(_e, { offset, velocity }) => {
                             const swipeThreshold = 100;
                             const velocityThreshold = 200;
                             if (Math.abs(offset.y) > swipeThreshold || Math.abs(velocity.y) > velocityThreshold) {
@@ -142,7 +125,7 @@ export function ImageModal({ wallpaper, onClose }: ImageModalProps) {
                                         dragConstraints={containerRef}
                                         dragElastic={0.2}
                                         whileDrag={{ cursor: "grabbing" }}
-                                        onDragEnd={(e, { offset, velocity }) => {
+                                        onDragEnd={(_e, { offset, velocity }) => {
                                             if (!isDesktop) {
                                                 const swipeThreshold = 150;
                                                 const velocityThreshold = 200;
@@ -212,7 +195,7 @@ function ModalControls({ wallpaper, showInfo, setShowInfo, onClose, isMobile }: 
                         glassIcon(),
                         iconBtnClass,
                         'text-white',
-                        showInfo && "bg-white/20 text-[#00e5ff]"
+                        showInfo && "bg-white/20 text-cyan-400"
                     )}
                 >
                     <Info size={24} className="md:w-5 md:h-5" />

@@ -1,13 +1,11 @@
 'use client';
 
 import { Heart } from 'lucide-react';
-import { cn, glassIcon } from '@/utils/helpers';
+import { cn, glassIcon, triggerHaptic } from '@/utils/helpers';
 import { useAuth } from '@/lib/hooks/auth/useAuth';
 import { useFavorites } from '@/lib/hooks/auth/useFavorites';
-import { useHaptics } from '@/components/providers/HapticsProvider';
 import { notifyLoginRequired } from '@/components/common/Notifications';
-import { Wallpaper } from '@/lib/supabase';
-import { incrementFavoriteCount } from './WallpaperInfo';
+import { Wallpaper, incrementFavoriteCount } from '@/lib/supabase';
 
 interface FavoriteButtonProps {
     wallpaper: Wallpaper;
@@ -17,13 +15,12 @@ interface FavoriteButtonProps {
 export function FavoriteButton({ wallpaper, className }: FavoriteButtonProps) {
     const { user } = useAuth();
     const { isFavorite, toggleFavorite, isToggling } = useFavorites();
-    const { triggerHaptic } = useHaptics();
     const favorited = isFavorite(wallpaper.id);
 
     const onFavoriteClick = (e: React.MouseEvent) => {
         e.stopPropagation();
         if (!user) {
-            notifyLoginRequired('save to favorites', () => window.dispatchEvent(new CustomEvent('open-auth-modal')));
+            notifyLoginRequired('save to favorites', () => {});
             return;
         }
 

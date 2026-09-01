@@ -2,10 +2,8 @@
 
 import { useState } from 'react';
 import { Share2, Check, Loader2 } from 'lucide-react';
-import { cn, glassIcon, getProxiedImageUrl } from '@/utils/helpers';
+import { cn, glassIcon, getProxiedImageUrl, triggerHaptic } from '@/utils/helpers';
 import { notifySuccess, notifyError } from '@/components/common/Notifications';
-import { useHaptics } from '@/components/providers/HapticsProvider';
-import { ANIMATION } from '@/lib/constants';
 
 interface ShareButtonProps {
     url: string;
@@ -18,8 +16,6 @@ interface ShareButtonProps {
 export function ShareButton({ url, title = 'Check out this 4K Wallpaper!', imageUrl, imageAlt = 'wallpaper', className }: ShareButtonProps) {
     const [isCopied, setIsCopied] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-
-    const { triggerHaptic } = useHaptics();
 
     const handleShare = async (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -102,7 +98,7 @@ export function ShareButton({ url, title = 'Check out this 4K Wallpaper!', image
             }
 
             triggerHaptic('success');
-            setTimeout(() => setIsCopied(false), ANIMATION.COPY_FEEDBACK);
+            setTimeout(() => setIsCopied(false), 2000);
         } catch (err) {
             console.error('Copy failed:', err);
             triggerHaptic('error');

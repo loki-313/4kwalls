@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { useAuth } from './useAuth';
 import { notifySuccess, notifyError } from '@/components/common/Notifications';
 import { STALE_TIME } from '@/lib/constants';
@@ -12,7 +12,7 @@ export function useFavorites() {
     const { data: favoriteIds = [] } = useQuery({
         queryKey,
         queryFn: async () => {
-            if (!user) return [];
+            if (!user || !isSupabaseConfigured) return [];
             const { data, error } = await supabase
                 .from('user_favorites')
                 .select('wallpaper_id')
@@ -21,13 +21,14 @@ export function useFavorites() {
             if (error) throw error;
             return data.map((fav: { wallpaper_id: number }) => fav.wallpaper_id);
         },
-        enabled: !!user,
+        enabled: !!user && isSupabaseConfigured,
         staleTime: STALE_TIME.FAVORITES,
     });
 
     const toggleMut = useMutation({
         mutationFn: async (wallpaperId: number) => {
             if (!user) throw new Error("User not logged in");
+            if (!isSupabaseConfigured) return;
             const isFavorite = favoriteIds.includes(wallpaperId);
 
             if (isFavorite) {

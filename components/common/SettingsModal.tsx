@@ -1,31 +1,27 @@
-import { useState } from 'react';
+'use client';
+
+import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { X, User, Lock, LogOut, Loader2, Save, Monitor, Palette, AlertTriangle, Trash2 } from 'lucide-react';
-import { useTheme } from '@/components/providers/ThemeProvider';
+import { X, User, Lock, LogOut, Loader2, Save, AlertTriangle, Trash2 } from 'lucide-react';
 import { useAuth } from '@/lib/hooks/auth/useAuth';
-import { useGraphics } from '@/components/providers/GraphicsProvider';
-import { useHaptics } from '@/components/providers/HapticsProvider';
-import { notifySuccess, notifyError, DeleteConfirmationModal, DeleteFavoritesModal } from '@/components/common/Notifications';
-import { cn, glass, glassInput, THEMES } from '@/utils/helpers';
+import { notifySuccess, notifyError } from '@/components/common/Notifications';
+import { cn, glass, glassInput } from '@/utils/helpers';
 import Image from 'next/image';
 import { deleteAccount, deleteAllFavorites } from '@/utils/auth-actions';
 import { supabase } from '@/lib/supabase';
 import { useQueryClient } from '@tanstack/react-query';
-import { Z_INDEX, LIMITS } from '@/lib/constants';
+import { LIMITS } from '@/lib/constants';
 
 interface SettingsModalProps {
     isOpen: boolean;
     onClose: () => void;
 }
 
-type Tab = 'profile' | 'security' | 'graphics' | 'personalization' | 'danger';
+type Tab = 'profile' | 'security' | 'danger';
 
 export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     const { user, signOut, updateProfile, updatePassword, signInWithEmail } = useAuth();
     const queryClient = useQueryClient();
-    const { showBackground, setShowBackground, reduceBlur, setReduceBlur } = useGraphics();
-    const { hapticsEnabled, toggleHaptics, isSupported } = useHaptics();
-    const { accentColor, setAccentColor } = useTheme();
     const [activeTab, setActiveTab] = useState<Tab>('profile');
     const [isLoading, setIsLoading] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -86,16 +82,13 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     return (
         <AnimatePresence>
             {isOpen && (
-                <div
-                    className="fixed inset-0 flex items-center justify-center p-4"
-                    style={{ zIndex: Z_INDEX.OVERLAY_MODAL }}
-                >
+                <div className="fixed inset-0 flex items-center justify-center p-4 z-50">
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="absolute inset-0 bg-transparent"
+                        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
                     />
 
                     <motion.div
@@ -108,7 +101,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                             "relative w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden",
                             "flex flex-col md:flex-row",
                             "max-h-[90vh] md:h-[500px]",
-                            "bg-black/90 md:bg-black/40"
+                            "bg-black/90 md:bg-black/40 z-10"
                         )}
                     >
                         <button
@@ -165,20 +158,6 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                         onClick={() => setActiveTab('security')}
                                     />
                                 )}
-
-                                <TabButton
-                                    icon={<Monitor size={18} />}
-                                    label="Graphics"
-                                    isActive={activeTab === 'graphics'}
-                                    onClick={() => setActiveTab('graphics')}
-                                />
-
-                                <TabButton
-                                    icon={<Palette size={18} />}
-                                    label="Colors"
-                                    isActive={activeTab === 'personalization'}
-                                    onClick={() => setActiveTab('personalization')}
-                                />
                             </div>
 
                             <div className="hidden md:block mt-auto">
@@ -222,9 +201,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                             <h2 className="text-2xl font-bold text-white mb-6">
                                 {activeTab === 'profile' ? 'Profile Settings' :
                                     activeTab === 'security' ? 'Security Settings' :
-                                        activeTab === 'graphics' ? 'Graphics Settings' :
-                                            activeTab === 'personalization' ? 'Personalization' :
-                                                'Danger Zone'}
+                                        'Danger Zone'}
                             </h2>
 
                             {activeTab === 'profile' && (
@@ -247,8 +224,8 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                         type="submit"
                                         disabled={isLoading}
                                         className={cn(
-                                            "px-6 py-2 bg-[#00e5ff] text-black font-semibold rounded-lg",
-                                            "hover:bg-[#00cce6] transition-colors disabled:opacity-50",
+                                            "px-6 py-2 bg-cyan-400 text-black font-semibold rounded-lg",
+                                            "hover:bg-cyan-300 transition-colors disabled:opacity-50",
                                             "flex items-center gap-2"
                                         )}
                                     >
@@ -318,80 +295,6 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                         Update Password
                                     </button>
                                 </form>
-                            )}
-
-                            {activeTab === 'graphics' && (
-                                <div className="space-y-6 max-w-sm">
-                                    <ToggleCard
-                                        title="Enable Animations"
-                                        description="Show background particles"
-                                        isEnabled={showBackground}
-                                        onToggle={() => setShowBackground(!showBackground)}
-                                    />
-                                    <ToggleCard
-                                        title="Glass Effects"
-                                        description="Premium frosted glass styling"
-                                        isEnabled={!reduceBlur}
-                                        onToggle={() => setReduceBlur(!reduceBlur)}
-                                    />
-                                    {isSupported && (
-                                        <ToggleCard
-                                            title="Haptic Feedback"
-                                            description="Vibrations on interaction"
-                                            isEnabled={hapticsEnabled}
-                                            onToggle={toggleHaptics}
-                                        />
-                                    )}
-                                </div>
-                            )}
-
-                            {activeTab === 'personalization' && (
-                                <div className="space-y-6">
-
-
-                                    <div>
-                                        <h3 className="text-sm font-medium text-gray-400 mb-4">Accent Color</h3>
-                                        <div className="grid grid-cols-7 gap-3">
-                                            {THEMES.map((theme) => (
-                                                <button
-                                                    key={theme.name}
-                                                    onClick={() => setAccentColor(theme.value)}
-                                                    className="group relative flex flex-col items-center gap-2"
-                                                    title={theme.name}
-                                                >
-                                                    <div
-                                                        className={cn(
-                                                            "w-10 h-10 rounded-full border-2 transition-all duration-300",
-                                                            accentColor === theme.value
-                                                                ? "border-white scale-110 shadow-[0_0_15px_rgba(255,255,255,0.3)]"
-                                                                : "border-transparent hover:scale-110 hover:border-white/50"
-                                                        )}
-                                                        style={{ backgroundColor: theme.value }}
-                                                    >
-                                                        {accentColor === theme.value && (
-                                                            <div className="w-full h-full flex items-center justify-center">
-                                                                <div className="w-2 h-2 rounded-full bg-white shadow-sm" />
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    <div className="p-4 rounded-xl bg-[var(--accent)]/10 border border-[var(--accent)]/20">
-                                        <h4 className="text-[var(--accent)] font-medium mb-1">Preview</h4>
-                                        <p className="text-gray-400 text-sm">This is how your active elements will look.</p>
-                                        <div className="mt-4 flex gap-3">
-                                            <button className="px-4 py-2 rounded-lg bg-[var(--accent)] text-black font-semibold text-sm">
-                                                Primary
-                                            </button>
-                                            <button className="px-4 py-2 rounded-lg border border-[var(--accent)] text-[var(--accent)] font-medium text-sm">
-                                                Secondary
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
                             )}
 
                             {activeTab === 'danger' && (
@@ -510,7 +413,6 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                     if (user) {
                                         queryClient.invalidateQueries({ queryKey: ['favorites', user.id] });
                                     }
-                                    window.dispatchEvent(new Event('favorites-updated'));
                                 } else {
                                     notifyError('Failed to delete favorites');
                                     if (user) {
@@ -531,14 +433,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     );
 }
 
-interface TabButtonProps {
-    icon: React.ReactNode;
-    label: string;
-    isActive: boolean;
-    onClick: () => void;
-}
-
-function TabButton({ icon, label, isActive, onClick }: TabButtonProps) {
+function TabButton({ icon, label, isActive, onClick }: { icon: React.ReactNode; label: string; isActive: boolean; onClick: () => void }) {
     return (
         <button
             onClick={onClick}
@@ -556,32 +451,194 @@ function TabButton({ icon, label, isActive, onClick }: TabButtonProps) {
     );
 }
 
-interface ToggleCardProps {
-    title: string;
-    description: string;
-    isEnabled: boolean;
-    onToggle: () => void;
+function DeleteConfirmationModal({ isOpen, onClose, onConfirm, requiresPassword }: {
+    isOpen: boolean;
+    onClose: () => void;
+    onConfirm: (password?: string) => Promise<void>;
+    requiresPassword?: boolean;
+}) {
+    const [password, setPassword] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        if (isOpen) {
+            setPassword('');
+            setIsLoading(false);
+        }
+    }, [isOpen]);
+
+    return (
+        <AnimatePresence>
+            {isOpen && (
+                <div className="fixed inset-0 flex items-center justify-center p-4 z-50">
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={onClose}
+                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                    />
+
+                    <motion.div
+                        initial={{ scale: 0.9, y: 10, opacity: 0 }}
+                        animate={{ scale: 1, y: 0, opacity: 1 }}
+                        exit={{ scale: 0.9, y: 10, opacity: 0 }}
+                        className={cn(
+                            glass(),
+                            "relative w-full max-w-sm p-6 rounded-2xl",
+                            "border border-red-500/30 shadow-2xl",
+                            "flex flex-col items-center text-center space-y-6 z-10"
+                        )}
+                    >
+                        <div className="w-16 h-16 rounded-full bg-red-500/20 flex items-center justify-center">
+                            <AlertTriangle size={32} className="text-red-500" />
+                        </div>
+
+                        <div>
+                            <h3 className="text-xl font-bold text-white mb-2">Delete Account</h3>
+                            <p className="text-gray-300 text-sm">
+                                Are you sure you want to do this? You will not be able to recover your data and favorites if you click delete.
+                            </p>
+                        </div>
+
+                        {requiresPassword && (
+                            <div className="w-full space-y-2 text-left">
+                                <label className="text-sm text-gray-400 ml-1">Confirm Password</label>
+                                <div className="relative group">
+                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-white transition-colors" size={18} />
+                                    <input
+                                        type="password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        className={glassInput()}
+                                        placeholder="Enter password"
+                                    />
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="flex gap-3 w-full">
+                            <button
+                                onClick={onClose}
+                                disabled={isLoading}
+                                className={cn(
+                                    "flex-1 py-3 rounded-xl",
+                                    "bg-red-500 hover:bg-red-600 text-white font-bold",
+                                    "shadow-lg shadow-red-500/20 transition-colors",
+                                    "flex items-center justify-center gap-2 disabled:opacity-50"
+                                )}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={async () => {
+                                    if (requiresPassword && !password) {
+                                        notifyError('Password is required');
+                                        return;
+                                    }
+                                    setIsLoading(true);
+                                    try {
+                                        await onConfirm(password);
+                                    } catch {
+                                        setIsLoading(false);
+                                    }
+                                }}
+                                disabled={isLoading}
+                                className={cn(
+                                    "flex-1 py-3 rounded-xl",
+                                    "bg-white/5 hover:bg-white/10 text-white font-medium",
+                                    "transition-colors disabled:opacity-50",
+                                    "flex items-center justify-center gap-2"
+                                )}
+                            >
+                                {isLoading ? <Loader2 size={18} className="animate-spin" /> : <Trash2 size={18} />}
+                                {isLoading ? 'Deleting...' : 'Delete'}
+                            </button>
+                        </div>
+                    </motion.div>
+                </div>
+            )}
+        </AnimatePresence>
+    );
 }
 
-function ToggleCard({ title, description, isEnabled, onToggle }: ToggleCardProps) {
+function DeleteFavoritesModal({ isOpen, onClose, onConfirm }: {
+    isOpen: boolean;
+    onClose: () => void;
+    onConfirm: () => Promise<void>;
+}) {
+    const [isLoading, setIsLoading] = useState(false);
+
     return (
-        <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/10">
-            <div>
-                <h3 className="font-medium text-white">{title}</h3>
-                <p className="text-xs text-gray-400 mt-1">{description}</p>
-            </div>
-            <button
-                onClick={onToggle}
-                className={cn(
-                    "w-12 h-6 rounded-full relative transition-colors duration-300",
-                    isEnabled ? "bg-[#00e5ff]" : "bg-white/10"
-                )}
-            >
-                <div className={cn(
-                    "w-4 h-4 rounded-full bg-white absolute top-1 transition-all duration-300",
-                    isEnabled ? "left-7" : "left-1"
-                )} />
-            </button>
-        </div>
+        <AnimatePresence>
+            {isOpen && (
+                <div className="fixed inset-0 flex items-center justify-center p-4 z-50">
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={onClose}
+                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                    />
+
+                    <motion.div
+                        initial={{ scale: 0.9, y: 10, opacity: 0 }}
+                        animate={{ scale: 1, y: 0, opacity: 1 }}
+                        exit={{ scale: 0.9, y: 10, opacity: 0 }}
+                        className={cn(
+                            glass(),
+                            "relative w-full max-w-sm p-6 rounded-2xl",
+                            "border border-red-500/30 shadow-2xl",
+                            "flex flex-col items-center text-center space-y-6 z-10"
+                        )}
+                    >
+                        <div className="w-16 h-16 rounded-full bg-red-500/20 flex items-center justify-center">
+                            <Trash2 size={32} className="text-red-500" />
+                        </div>
+
+                        <div>
+                            <h3 className="text-xl font-bold text-white mb-2">Delete All Favorites</h3>
+                            <p className="text-gray-300 text-sm">
+                                Are you sure? This will remove all your loved wallpapers. This action cannot be undone.
+                            </p>
+                        </div>
+
+                        <div className="flex gap-3 w-full">
+                            <button
+                                onClick={onClose}
+                                disabled={isLoading}
+                                className={cn(
+                                    "flex-1 py-3 rounded-xl",
+                                    "bg-white/5 hover:bg-white/10 text-white font-medium",
+                                    "transition-colors disabled:opacity-50"
+                                )}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={async () => {
+                                    setIsLoading(true);
+                                    try {
+                                        await onConfirm();
+                                    } catch {
+                                        setIsLoading(false);
+                                    }
+                                }}
+                                disabled={isLoading}
+                                className={cn(
+                                    "flex-1 py-3 rounded-xl",
+                                    "bg-red-500 hover:bg-red-600 text-white font-bold",
+                                    "shadow-lg shadow-red-500/20 transition-colors",
+                                    "flex items-center justify-center gap-2 disabled:opacity-50"
+                                )}
+                            >
+                                {isLoading ? <Loader2 size={18} className="animate-spin" /> : <Trash2 size={18} />}
+                                {isLoading ? 'Deleting...' : 'Delete'}
+                            </button>
+                        </div>
+                    </motion.div>
+                </div>
+            )}
+        </AnimatePresence>
     );
 }

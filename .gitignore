@@ -44,3 +44,5 @@ next-env.d.ts
 
 # project guide
 PROJECT_GUIDE.md
+
+.vscode/*

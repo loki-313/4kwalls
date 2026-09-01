@@ -2,11 +2,11 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Mail, Lock, Loader2, Key, } from 'lucide-react';
+import { X, Mail, Lock, Loader2, Key } from 'lucide-react';
 import { useAuth } from '@/lib/hooks/auth/useAuth';
 import { notifySuccess } from '@/components/common/Notifications';
 import { cn, glass, glassInput } from '@/utils/helpers';
-import { Z_INDEX, LIMITS } from '@/lib/constants';
+import { LIMITS } from '@/lib/constants';
 
 interface AuthModalProps {
     isOpen: boolean;
@@ -82,9 +82,9 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
     const handleOAuth = async (provider: 'google' | 'github') => {
         try {
             await signInWithOAuth(provider);
-        } catch (error) {
-            console.error(error);
-            setError((error as Error).message || 'OAuth authentication failed');
+        } catch (err) {
+            console.error(err);
+            setError((err as Error).message || 'OAuth authentication failed');
         }
     };
 
@@ -102,10 +102,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
     return (
         <AnimatePresence>
             {isOpen && (
-                <div
-                    className="fixed inset-0 flex items-center justify-center p-4"
-                    style={{ zIndex: Z_INDEX.OVERLAY_MODAL }}
-                >
+                <div className="fixed inset-0 flex items-center justify-center p-4 z-50">
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -122,7 +119,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                         className={cn(
                             glass(),
                             "w-full max-w-md p-6 md:p-8 rounded-2xl shadow-2xl relative",
-                            "overflow-y-auto max-h-[90vh] transform-gpu"
+                            "overflow-y-auto max-h-[90vh] transform-gpu z-10"
                         )}
                     >
                         <button
@@ -242,7 +239,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                                                 <input
                                                     type="password"
                                                     value={confirmPassword}
-                                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                                    onChange={(e) => setConfirmNewPassword(e.target.value)}
                                                     className={cn(
                                                         "w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4",
                                                         "text-white placeholder:text-gray-500 focus:outline-none",

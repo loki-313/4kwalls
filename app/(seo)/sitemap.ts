@@ -1,4 +1,3 @@
-
 import { MetadataRoute } from 'next';
 import { getAllWallpaperIds } from '@/lib/supabase';
 import { getSiteUrl } from '@/utils/helpers';
@@ -6,7 +5,6 @@ import { getSiteUrl } from '@/utils/helpers';
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const baseUrl = getSiteUrl();
 
-    
     const staticRoutes: MetadataRoute.Sitemap = [
         {
             url: baseUrl,
@@ -20,17 +18,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             changeFrequency: 'always',
             priority: 0.9,
         },
-        
-        
-        
     ];
 
-    
     const wallpaperIds = await getAllWallpaperIds();
 
     const dynamicRoutes: MetadataRoute.Sitemap = wallpaperIds.map((id) => ({
         url: `${baseUrl}/wallpapers/${id}`,
-        lastModified: new Date(), 
+        lastModified: new Date(),
         changeFrequency: 'monthly',
         priority: 0.7,
     }));

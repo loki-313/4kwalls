@@ -1,7 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   reactCompiler: true,
   allowedDevOrigins: ['localhost:3000', '192.168.0.102:3000'],
   images: {
@@ -11,7 +10,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'images.unsplash.com', // Adding common placeholder source just in case
+        hostname: 'images.unsplash.com',
       },
       {
         protocol: 'https',
@@ -44,6 +43,9 @@ const nextConfig: NextConfig = {
     ],
   },
   async rewrites() {
+    if (!process.env.R2_PUBLIC_URL) {
+      return [];
+    }
     return [
       {
         source: '/images/:path*',

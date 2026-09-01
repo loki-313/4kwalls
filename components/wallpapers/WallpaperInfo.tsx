@@ -4,13 +4,7 @@ import { Monitor, HardDrive, Download, Heart } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Wallpaper } from '@/lib/supabase';
 import { formatFileSize, cn } from '@/utils/helpers';
-import {
-    useWallpaperStats,
-    incrementDownloadCount,
-    incrementFavoriteCount
-} from '@/lib/hooks/useWallpaperStats';
-
-export { incrementDownloadCount, incrementFavoriteCount };
+import { useWallpaperStats } from '@/lib/hooks/useWallpaperStats';
 
 interface WallpaperInfoProps {
     wallpaper: Wallpaper;

@@ -5,7 +5,6 @@ import Link from "next/link";
 import { ArrowRight, Sparkles, Github } from "lucide-react";
 import { cn, glass, glassButton } from "@/utils/helpers";
 import { Roboto } from "next/font/google";
-import { ANIMATION } from "@/lib/constants";
 
 const roboto = Roboto({
     weight: ["400", "500"],
@@ -22,7 +21,7 @@ export function Hero() {
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: ANIMATION.HERO_REVEAL, ease: "easeOut" }}
+                    transition={{ duration: 0.6, ease: "easeOut" }}
                     className={cn(
                         glass(),
                         "px-4 py-1.5 rounded-full flex items-center gap-2",
@@ -36,7 +35,7 @@ export function Hero() {
                 <motion.h1
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: ANIMATION.HERO_CONTENT, delay: ANIMATION.HERO_DELAY_1, ease: "easeOut" }}
+                    transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
                     className={cn(
                         "text-5xl md:text-7xl lg:text-8xl font-black text-white",
                         "tracking-tight leading-[1.1]"
@@ -51,7 +50,7 @@ export function Hero() {
                 <motion.p
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: ANIMATION.HERO_CONTENT, delay: ANIMATION.HERO_DELAY_2, ease: "easeOut" }}
+                    transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
                     className={cn(
                         roboto.className,
                         "text-base md:text-lg text-gray-400 max-w-xl leading-relaxed tracking-wide"
@@ -63,7 +62,7 @@ export function Hero() {
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: ANIMATION.HERO_CONTENT, delay: ANIMATION.HERO_DELAY_3, ease: "easeOut" }}
+                    transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
                     className="flex flex-col sm:flex-row items-center gap-4 mt-4"
                 >
                     <Link
@@ -98,7 +97,7 @@ export function Hero() {
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: ANIMATION.HERO_BACKGROUND, delay: ANIMATION.HERO_DELAY_BG }}
+                transition={{ duration: 1.5, delay: 0.5 }}
                 className="absolute inset-0 z-0 pointer-events-none"
             />
         </div>

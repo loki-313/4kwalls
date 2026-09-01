@@ -13,48 +13,37 @@ import {
     loadViewedIds,
     saveViewedIds,
     clearViewedIds,
-    fetchUniqueWallpapers, 
+    fetchUniqueWallpapers,
     updateViewedIds,
     shouldStopFetching,
     fetchTotalWallpaperCount
 } from '@/utils/random';
 
-
-
 export default function WallpapersPage() {
     const [selectedWallpaper, setSelectedWallpaper] = useState<Wallpaper | null>(null);
     const [totalCount, setTotalCount] = useState(0);
-
-    
     const [viewedIds, setViewedIds] = useState<Set<number>>(new Set());
     const [isHydrated, setIsHydrated] = useState(false);
 
-    
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            
             setViewedIds(loadViewedIds());
             setIsHydrated(true);
         }
     }, []);
 
-    
     useEffect(() => {
         if (!isHydrated) return;
-
         const timeoutId = setTimeout(() => {
             saveViewedIds(viewedIds);
-        }, 300); 
-
+        }, 300);
         return () => clearTimeout(timeoutId);
     }, [viewedIds, isHydrated]);
 
-    
     useEffect(() => {
         fetchTotalWallpaperCount().then(setTotalCount);
     }, []);
 
-    
     const {
         data,
         fetchNextPage,
@@ -66,18 +55,11 @@ export default function WallpapersPage() {
     } = useInfiniteQuery({
         queryKey: ['wallpapers', 'random'],
         queryFn: async () => {
-            
             const wallpapers = await fetchUniqueWallpapers(32, viewedIds);
-
-            
-            
-            
             setViewedIds(prev => updateViewedIds(prev, wallpapers));
-
             return wallpapers;
         },
         getNextPageParam: (lastPage, allPages) => {
-            
             if (shouldStopFetching(viewedIds.size, totalCount, lastPage.length, 32)) {
                 return undefined;
             }
@@ -85,7 +67,7 @@ export default function WallpapersPage() {
         },
         initialPageParam: 0,
         staleTime: Infinity,
-        enabled: isHydrated, 
+        enabled: isHydrated,
     });
 
     const observerRef = useRef<HTMLDivElement | null>(null);
@@ -99,7 +81,7 @@ export default function WallpapersPage() {
                 }
             },
             {
-                rootMargin: '600px', 
+                rootMargin: '600px',
                 threshold: 0
             }
         );
@@ -111,41 +93,20 @@ export default function WallpapersPage() {
         return () => observer.disconnect();
     }, [fetchNextPage, hasNextPage, isFetchingNextPage, isLoading]);
 
-    
-    
-
-    
-    
     const allWallpapers = data?.pages.flat() || [];
     const wallpaperMap = new Map<number, Wallpaper>();
-
     for (const w of allWallpapers) {
-        if (wallpaperMap.has(w.id)) {
-            
-            wallpaperMap.set(w.id, {
-                ...w,
-            });
-        } else {
-            wallpaperMap.set(w.id, w);
-        }
+        wallpaperMap.set(w.id, w);
     }
-
     const wallpapers = Array.from(wallpaperMap.values());
 
     const handleRefresh = async () => {
-        
         setViewedIds(new Set());
         clearViewedIds();
-
-        
         window.scrollTo({ top: 0, behavior: 'smooth' });
-
-        
-        
         await refetch();
     };
 
-    
     if (isLoading && !data) {
         return (
             <main className="min-h-screen bg-black text-white font-sans relative">
@@ -186,7 +147,6 @@ export default function WallpapersPage() {
                     ))}
                 </motion.div>
 
-                {}
                 <div ref={observerRef} className="mt-8 pb-8 flex justify-center">
                     {isFetchingNextPage && <Loader2 className="animate-spin text-white/50" size={24} />}
                 </div>
@@ -202,5 +162,3 @@ export default function WallpapersPage() {
         </main>
     );
 }
-
-

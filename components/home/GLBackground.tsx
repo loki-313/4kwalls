@@ -6,7 +6,6 @@ import { createPortal, useFrame, Canvas } from "@react-three/fiber";
 import { useFBO, Effects } from "@react-three/drei";
 import * as easing from "maath/easing";
 import { DofPointsMaterial, SimulationMaterial, VignetteShader } from "@/utils/gl-helpers";
-import { useGraphics } from "@/components/providers/GraphicsProvider";
 
 function Particles({
     speed,
@@ -56,8 +55,7 @@ function Particles({
     const dofPointsMaterial = useMemo(() => {
         const m = new DofPointsMaterial();
         m.uniforms.positions.value = target.texture;
-        m.uniforms.initialPositions.value =
-            simulationMaterial.uniforms.positions.value;
+        m.uniforms.initialPositions.value = simulationMaterial.uniforms.positions.value;
         return m;
     }, [simulationMaterial, target.texture]);
 
@@ -77,13 +75,13 @@ function Particles({
 
     const particles = useMemo(() => {
         const length = size * size;
-        const particles = new Float32Array(length * 3);
+        const pts = new Float32Array(length * 3);
         for (let i = 0; i < length; i++) {
             const i3 = i * 3;
-            particles[i3 + 0] = (i % size) / size;
-            particles[i3 + 1] = i / size / size;
+            pts[i3 + 0] = (i % size) / size;
+            pts[i3 + 1] = i / size / size;
         }
-        return particles;
+        return pts;
     }, [size]);
 
     useFrame((state, delta) => {
@@ -109,7 +107,6 @@ function Particles({
             setIsRevealing(false);
         }
 
-        
         dofPointsMaterial.uniforms.uTime.value = currentTime;
         dofPointsMaterial.uniforms.uFocus.value = focus;
         dofPointsMaterial.uniforms.uBlur.value = aperture;
@@ -122,7 +119,6 @@ function Particles({
             delta
         );
 
-        
         simulationMaterial.uniforms.uTime.value = currentTime;
         simulationMaterial.uniforms.uNoiseScale.value = noiseScale;
         simulationMaterial.uniforms.uNoiseIntensity.value = noiseIntensity;
@@ -158,8 +154,6 @@ function Particles({
 }
 
 export const GLBackground = ({ hovering = false }: { hovering?: boolean }) => {
-    const { showBackground } = useGraphics();
-
     const config = {
         speed: 1.0,
         focus: 3.8,
@@ -190,10 +184,8 @@ export const GLBackground = ({ hovering = false }: { hovering?: boolean }) => {
         };
     }, []);
 
-    if (!showBackground) return null;
-
     return (
-        <div id="webgl" className="absolute inset-0 z-0">
+        <div id="webgl" className="absolute inset-0 z-0 pointer-events-none">
             <Canvas
                 frameloop={isVisible ? "always" : "never"}
                 camera={{

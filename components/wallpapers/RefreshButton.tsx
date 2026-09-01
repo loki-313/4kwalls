@@ -2,9 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { RefreshCw } from 'lucide-react';
-import { cn } from '@/utils/helpers';
-import { useHaptics } from '@/components/providers/HapticsProvider';
-import { ANIMATION } from '@/lib/constants';
+import { cn, triggerHaptic } from '@/utils/helpers';
 
 interface RefreshButtonProps {
     onRefresh: () => void;
@@ -12,8 +10,6 @@ interface RefreshButtonProps {
 }
 
 export function RefreshButton({ onRefresh, isLoading }: RefreshButtonProps) {
-    const { triggerHaptic } = useHaptics();
-
     const handleClick = () => {
         triggerHaptic('medium');
         onRefresh();
@@ -29,9 +25,9 @@ export function RefreshButton({ onRefresh, isLoading }: RefreshButtonProps) {
             }}
             transition={{
                 rotate: isLoading
-                    ? { duration: ANIMATION.SPIN_SLOW, repeat: Infinity, ease: "linear" }
+                    ? { duration: 1, repeat: Infinity, ease: "linear" }
                     : { duration: 0 },
-                default: { duration: ANIMATION.MEDIUM }
+                default: { duration: 0.3 }
             }}
             whileHover={isLoading ? {} : { scale: 1.1 }}
             whileTap={isLoading ? {} : { scale: 0.9 }}

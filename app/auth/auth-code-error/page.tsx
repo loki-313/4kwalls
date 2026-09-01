@@ -17,8 +17,7 @@ export default function AuthCodeErrorPage() {
                 <div className="space-y-3">
                     <Link
                         href="/"
-                        className="inline-block px-6 py-3 bg-white/10 hover:bg-white/20 
-                                   rounded-xl transition-colors duration-200 font-medium"
+                        className="inline-block px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors duration-200 font-medium"
                     >
                         Go to Home
                     </Link>
